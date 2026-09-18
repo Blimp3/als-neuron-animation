@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lower Motor Neuron &amp; ALS — Interactive Visualization</title>
+<meta name="description" content="Educational interactive visualization of the lower motor unit and selected ALS-related changes, shown as illustrative teaching states.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#scene-wrap">Skip to visualization</a>
+
+<header class="site">
+  <div class="wrap">
+    <h1>The Lower Motor Neuron in Health and in ALS</h1>
+    <p class="sub">An interactive tour of the lower motor unit — motor-neuron cell body, axon,
+      neuromuscular junction and muscle fibers — and selected changes associated with
+      amyotrophic lateral sclerosis (ALS), shown as illustrative teaching states.</p>
+    <p id="umn-note"></p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- controls -->
+  <div class="controls" role="toolbar" aria-label="Visualization controls">
+    <button id="mode-normal" aria-pressed="true">Normal</button>
+    <button id="mode-als" aria-pressed="false">ALS-affected</button>
+    <button id="play-journey">▶ Signal journey</button>
+    <button id="open-cross-section">Spinal cord cross-section</button>
+    <span class="spacer"></span>
+    <button id="reduce-motion" aria-pressed="false">Reduce motion: off</button>
+  </div>
+
+  <!-- timeline between the healthy state and five illustrative teaching states -->
+  <section class="timeline" aria-label="Illustrative teaching states">
+    <label for="stage-slider">Teaching states: healthy → illustrative ALS states</label>
+    <input type="range" id="stage-slider" min="0" max="5" step="1" value="0"
+           aria-valuetext="Normal lower motor neuron">
+    <div class="ticks">
+      <span class="tick on" data-stage="0">Healthy</span>
+      <span class="tick" data-stage="1">1 · Cellular stress</span>
+      <span class="tick" data-stage="2">2 · NMJ instability</span>
+      <span class="tick" data-stage="3">3 · Axonal change</span>
+      <span class="tick" data-stage="4">4 · Reinnervation</span>
+      <span class="tick" data-stage="5">5 · Motor-unit loss</span>
+    </div>
+    <div class="stage-desc" aria-live="polite">
+      <h2 id="stage-title"></h2>
+      <p id="stage-body"></p>
+      <ul id="stage-tags"></ul>
+    </div>
+  </section>
+
+  <!-- 3D model (rotatable) — mirrors the 2D diagram and the teaching states -->
+  <section class="scene3d-section" aria-label="Interactive 3D model of the lower motor unit">
+    <h2>3D model <span class="h2-note">— drag to rotate, scroll to zoom, click a structure for its explanation</span></h2>
+    <div id="scene3d-wrap"></div>
+  </section>
+
+  <!-- scene + info panel -->
+  <div class="visual-row">
+    <div>
+      <div id="scene-wrap"></div>
+      <div class="legend" aria-hidden="true">
+        Axonal transport:
+        <span><span class="chip mito"></span>Mitochondria</span>
+        <span><span class="chip vesicle"></span>Vesicles</span>
+        <span><span class="chip protein"></span>Proteins</span>
+        <span><span class="chip rna"></span>RNA</span>
+        <span><span class="chip pulse"></span>Electrical signal</span>
+      </div>
+    </div>
+    <aside id="info-panel" aria-hidden="true" aria-live="polite">
+      <button id="info-close" aria-label="Close explanation">✕</button>
+      <p class="info-hint">Click any label or structure in the diagram to learn its normal role
+        and how it may be affected in ALS.</p>
+      <div class="info-body">
+        <h3 id="info-title"></h3>
+        <p class="sec">Normal role</p>
+        <p id="info-normal"></p>
+        <p class="sec">In ALS</p>
+        <p id="info-als"></p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- side-by-side comparison -->
+  <section class="compare" aria-label="Comparison of healthy and ALS-affected lower motor neuron">
+    <h2>Side-by-side comparison</h2>
+    <div class="compare-cols">
+      <div class="compare-col healthy">
+        <h3>Healthy lower motor neuron</h3>
+        <ul id="compare-healthy"></ul>
+      </div>
+      <div class="compare-col als">
+        <h3>ALS-affected lower motor neuron</h3>
+        <ul id="compare-als"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- key lesson -->
+  <section class="key-lesson" aria-label="Key lesson">
+    <h2>Key lesson</h2>
+    <p id="key-lesson-text"></p>
+  </section>
+
+</main>
+
+<!-- spinal-cord cross-section dialog -->
+<div id="cross-section-dialog" role="dialog" aria-modal="true" aria-labelledby="cs-title" aria-hidden="true">
+  <div class="cs-card">
+    <button id="cs-close" aria-label="Close cross-section">✕</button>
+    <h2 id="cs-title">Spinal cord cross-section</h2>
+    <div id="cross-section-wrap"></div>
+    <p>Lower motor-neuron cell bodies lie in the <strong>anterior (ventral) horn</strong> of the
+      gray matter. Their axons leave the cord through the ventral root and travel within
+      peripheral nerves to reach skeletal muscle. (By contrast, UPPER motor neurons live in the
+      brain's motor cortex and send their axons down the cord — ALS can affect both groups;
+      this page focuses on the lower motor neuron.)</p>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="wrap">
+    <p><strong>Educational disclaimer.</strong> <span id="disclaimer-text"></span></p>
+    <p>Run locally: open <code>index.html</code> directly in a browser, or serve this folder with
+      <code>python3 -m http.server</code>. No backend or internet connection is required.</p>
+  </div>
+</footer>
+
+<script src="js/vendor/three.min.js"></script>
+<script src="js/vendor/OrbitControls.js"></script>
+<script src="js/data.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/scene3d.js"></script>
+<script src="js/animation.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

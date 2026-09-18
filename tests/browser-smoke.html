@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ALS browser smoke check</title>
+<style>
+  body { font: 16px/1.4 sans-serif; margin: 1rem; }
+  [data-status="passed"] { color: #176b3a; }
+  [data-status="failed"] { color: #a11; white-space: pre-wrap; }
+  iframe { border: 1px solid #bbb; height: 20rem; width: 100%; }
+</style>
+</head>
+<body data-status="running">
+<h1>ALS browser smoke check</h1>
+<p id="result">Running checks in the real visualization…</p>
+<iframe id="app" src="../index.html" title="Visualization under test"></iframe>
+<script>
+(function () {
+  "use strict";
+
+  var frame = document.getElementById("app");
+  var result = document.getElementById("result");
+  var finished = false;
+
+  function check(condition, message) {
+    if (!condition) throw new Error(message);
+  }
+
+  function run() {
+    if (finished) return;
+    var app = frame.contentDocument;
+    if (!app || app.readyState !== "complete" || !app.getElementById("cs-close")) {
+      window.setTimeout(run, 25);
+      return;
+    }
+    finished = true;
+    try {
+      var win = frame.contentWindow;
+
+      var opener = app.getElementById("open-cross-section");
+      var close = app.getElementById("cs-close");
+      var dialog = app.getElementById("cross-section-dialog");
+      opener.focus();
+      opener.click();
+      check(dialog.getAttribute("aria-hidden") === "false", "dialog did not open");
+      check(app.activeElement === close, "dialog did not focus its close button");
+
+      var tab = new win.KeyboardEvent("keydown", {
+        bubbles: true, cancelable: true, key: "Tab"
+      });
+      close.dispatchEvent(tab);
+      check(tab.defaultPrevented, "Tab was not contained by the dialog");
+      check(app.activeElement === close, "Tab moved focus outside the dialog");
+
+      var reverseTab = new win.KeyboardEvent("keydown", {
+        bubbles: true, cancelable: true, key: "Tab", shiftKey: true
+      });
+      close.dispatchEvent(reverseTab);
+      check(reverseTab.defaultPrevented, "Shift+Tab was not contained by the dialog");
+      check(app.activeElement === close, "Shift+Tab moved focus outside the dialog");
+
+      app.dispatchEvent(new win.KeyboardEvent("keydown", {
+        bubbles: true, cancelable: true, key: "Escape"
+      }));
+      check(dialog.getAttribute("aria-hidden") === "true", "Escape did not close the dialog");
+      check(app.activeElement === opener, "closing the dialog did not return focus");
+
+      app.getElementById("mode-als").click();
+      check(app.getElementById("stage-title").textContent.indexOf("Illustrative state 1") !== -1,
+        "ALS mode did not select the first illustrative state");
+      var slider = app.getElementById("stage-slider");
+      for (var value = 0; value <= 5; value += 1) {
+        slider.value = String(value);
+        slider.dispatchEvent(new win.Event("input", { bubbles: true }));
+        check(app.getElementById("scene").classList.contains("stage" + value),
+          "timeline did not update the diagram to state " + value);
+        check(app.getElementById("mode-normal").getAttribute("aria-pressed") ===
+          (value === 0 ? "true" : "false"), "timeline did not update mode controls");
+      }
+
+      var reduce = app.getElementById("reduce-motion");
+      var wasReduced = app.body.classList.contains("reduced-motion");
+      reduce.click();
+      check(app.body.classList.contains("reduced-motion") !== wasReduced,
+        "reduced-motion control did not update the document");
+
+      document.body.dataset.status = "passed";
+      result.textContent = "Passed: dialog focus containment/return, Escape close, timeline states 0–5, and reduced-motion control.";
+    } catch (error) {
+      document.body.dataset.status = "failed";
+      result.textContent = "Failed: " + error.message;
+    }
+  }
+
+  frame.addEventListener("load", run);
+  if (frame.contentDocument && frame.contentDocument.readyState === "complete") run();
+})();
+</script>
+</body>
+</html>

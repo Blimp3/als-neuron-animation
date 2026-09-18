@@ -1,0 +1,370 @@
+/* ============================================================
+ * style.css — restrained medical-illustration styling.
+ * The ALS disease stages are driven almost entirely by the
+ * stage0..stage5 class on the root <svg id="scene">.
+ * ============================================================ */
+
+:root {
+  --bg: #fbf9f6;
+  --panel: #ffffff;
+  --ink: #2b3642;
+  --ink-soft: #55636f;
+  --line: #d8d2c8;
+  --accent: #2f5d7c;        /* label blue */
+  --accent-dark: #234b65;
+  --als: #a4504c;           /* muted clinical red for ALS accents */
+  --neuron: #e3a967;        /* soma tan */
+  --neuron-line: #b57f3e;
+  --axon: #ecc988;
+  --myelin: #d7e4f0;
+  --myelin-line: #7c9bb8;
+  --muscle: #e7b3ab;
+  --muscle-line: #b97f78;
+  --neighbor: #9fc4b0;
+  --neighbor-line: #6e9a85;
+  --focus: #1f6fb2;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+}
+
+.skip-link {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--accent); color: #fff; padding: .5rem 1rem; z-index: 50;
+}
+.skip-link:focus { left: 0; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 1rem; }
+
+/* ---------- header ---------- */
+header.site { padding: 1.6rem 0 .6rem; }
+header.site h1 { margin: 0 0 .3rem; font-size: 1.55rem; font-weight: 650; }
+header.site .sub { margin: 0; color: var(--ink-soft); max-width: 70ch; }
+#umn-note {
+  margin: .7rem 0 0; padding: .55rem .8rem;
+  background: #f2ede3; border-left: 3px solid var(--neuron-line);
+  font-size: .92rem; max-width: 90ch;
+}
+
+/* ---------- control bar ---------- */
+.controls {
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+  padding: .8rem 0;
+}
+button {
+  font: inherit; color: var(--ink);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: .45rem .85rem; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:focus-visible, .lbl:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+button[aria-pressed="true"] {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+#mode-als[aria-pressed="true"] { background: var(--als); border-color: var(--als); }
+#play-journey { font-weight: 600; }
+.spacer { flex: 1; }
+
+/* ---------- timeline ---------- */
+.timeline { padding: .2rem 0 .6rem; }
+.timeline label { font-weight: 600; display: block; margin-bottom: .35rem; }
+#stage-slider { width: 100%; accent-color: var(--accent); }
+.ticks {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  font-size: .78rem; color: var(--ink-soft); margin-top: .15rem;
+}
+.tick { text-align: center; cursor: pointer; padding: .2rem 0; border-radius: 4px; }
+.tick:hover { color: var(--accent); }
+.tick.on { color: var(--accent-dark); font-weight: 700; }
+body.mode-als .tick.on { color: var(--als); }
+
+.stage-desc {
+  margin-top: .7rem; padding: .9rem 1rem;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+}
+.stage-desc h2 { margin: 0 0 .35rem; font-size: 1.08rem; }
+body.mode-als .stage-desc h2 { color: var(--als); }
+.stage-desc p { margin: 0; max-width: 100ch; }
+#stage-tags { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem; padding: 0; margin: .6rem 0 0; }
+#stage-tags li {
+  font-size: .78rem; padding: .15rem .55rem; border-radius: 999px;
+  background: #f0e9e7; border: 1px solid #ddc9c4; color: #7a4a44;
+}
+
+/* ---------- 3D model ---------- */
+.scene3d-section { margin-top: 1rem; }
+.scene3d-section h2 { font-size: 1.15rem; margin: 0 0 .5rem; }
+.h2-note { font-weight: 400; font-size: .85rem; color: var(--ink-soft); }
+#scene3d-wrap {
+  height: 460px; background: linear-gradient(#fdfcf9, #f3efe8);
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  touch-action: none;
+}
+#scene3d-wrap canvas { display: block; cursor: grab; }
+#scene3d-wrap canvas:active { cursor: grabbing; }
+.webgl-fallback { padding: 2rem; color: var(--ink-soft); }
+@media (max-width: 900px) { #scene3d-wrap { height: 340px; } }
+
+/* ---------- main visual + info panel ---------- */
+.visual-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1rem;
+  align-items: start; margin-top: .6rem;
+}
+#scene-wrap {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: .4rem; overflow-x: auto;
+}
+#scene { display: block; width: 100%; height: auto; min-width: 640px; }
+
+#info-panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 1rem; position: sticky; top: .8rem;
+}
+#info-panel[aria-hidden="true"] .info-body { display: none; }
+#info-panel h3 { margin: 0 2rem .5rem 0; font-size: 1.05rem; color: var(--accent-dark); }
+#info-panel .sec { font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); margin: .8rem 0 .15rem; }
+#info-panel p { margin: 0; font-size: .94rem; }
+#info-close { position: absolute; top: .5rem; right: .5rem; padding: .15rem .55rem; }
+#info-panel:not(.open) #info-close { display: none; }
+.info-hint { color: var(--ink-soft); font-size: .92rem; margin: 0; }
+
+/* ---------- legend ---------- */
+.legend {
+  display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; align-items: center;
+  font-size: .82rem; color: var(--ink-soft); margin: .5rem .2rem 0;
+}
+.legend .chip { display: inline-block; width: .85em; height: .85em; border-radius: 50%; margin-right: .3em; vertical-align: -1px; }
+.chip.mito { background: #e8934a; } .chip.vesicle { background: #5a8fc7; }
+.chip.protein { background: #9a7ab8; } .chip.rna { background: #57a773; }
+.chip.pulse { background: #ffd166; }
+
+/* ============================================================
+ * SVG scene styling
+ * ============================================================ */
+.zone { fill: #f4efe6; stroke: #ddd5c6; }
+.zone-muscle { fill: #faf3f1; stroke: #e6d4d0; }
+.caption { font-size: 12px; fill: #8a8378; font-style: italic; }
+.nb-cap { font-size: 11px; }
+
+/* neuron */
+.dendrite { fill: none; stroke: var(--neuron-line); stroke-width: 4.5; stroke-linecap: round; transition: opacity .8s; }
+.dendrite.thin { stroke-width: 2.6; }
+#main-soma { fill: var(--neuron); stroke: var(--neuron-line); stroke-width: 2; transition: all .8s; }
+#main-soma-group { transform-box: fill-box; transform-origin: center; transition: transform 1s, opacity 1s; cursor: pointer; }
+.nucleus { fill: #f6e3c2; stroke: var(--neuron-line); stroke-width: 1.5; }
+.nucleolus { fill: var(--neuron-line); }
+#hillock { fill: var(--neuron); stroke: var(--neuron-line); stroke-width: 1.5; cursor: pointer; }
+
+/* axon + myelin */
+.axon-line { fill: none; stroke: var(--axon); stroke-width: 12; stroke-linecap: round; transition: all 1s; }
+.axon-line.nb { stroke: #b9d4c6; stroke-width: 8; }
+.myelin { fill: var(--myelin); stroke: var(--myelin-line); stroke-width: 1.6; }
+.myelin-seg { cursor: pointer; transition: opacity 1s; }
+.schwann-nucleus { fill: #7c9bb8; cursor: pointer; }
+.myelin-seg.nb .myelin { fill: #e2ede8; stroke: #8db3a3; }
+.myelin-seg.nb .schwann-nucleus { fill: #8db3a3; }
+.branch { fill: none; stroke: var(--axon); stroke-width: 7; stroke-linecap: round; transition: all 1s; }
+.bouton { fill: #b47fa0; stroke: #8d5a7c; stroke-width: 1.2; transition: opacity 1s; }
+.terminal { transition: opacity 1s; cursor: pointer; }
+.nb-term-boutons .bouton, .sprout-boutons .bouton { fill: var(--neighbor); stroke: var(--neighbor-line); }
+#axon-swell { opacity: 0; transition: opacity 1s; }
+#axon-swell circle { fill: #e8b96a; stroke: var(--neuron-line); stroke-width: 1.5; }
+
+/* neighbor neuron — deliberately faint until it matters in stage 4 */
+#neighbor { opacity: .5; transition: opacity 1s; }
+.soma.nb { fill: var(--neighbor); stroke: var(--neighbor-line); stroke-width: 1.8; }
+.nucleus.nb { fill: #dcebe2; stroke: var(--neighbor-line); }
+.nucleolus.nb { fill: var(--neighbor-line); }
+.dendrite.nb { stroke: var(--neighbor-line); stroke-width: 3.5; }
+.sprout { fill: none; stroke: var(--neighbor-line); stroke-width: 4; stroke-linecap: round;
+  stroke-dasharray: 3 6; opacity: 0; transition: opacity 1.2s; }
+.sprout-boutons { opacity: 0; transition: opacity 1.2s; }
+
+/* soma stress markers (stage 1+) — MEDICAL: protein aggregates,
+ * stressed mitochondria, RNA clumps, reactive oxygen species */
+.agg circle { fill: #6d4a3a; }
+.stress-mito ellipse { fill: #b06a3a; stroke: #7a4526; }
+.rna-clump { fill: #3f7a52; }
+.ros path { fill: #c0563f; }
+.agg, .stress-mito, .rna-clump, .ros { opacity: 0; transition: opacity 1s; }
+
+/* muscle */
+.fiber { cursor: pointer; transform-box: fill-box; transform-origin: center;
+  transition: transform 1.1s ease, opacity 1.1s; }
+.fiber-body { fill: var(--muscle); stroke: var(--muscle-line); stroke-width: 2; transition: fill 1s; }
+.striation { stroke: rgba(150, 90, 84, .45); stroke-width: 2; }
+.fiber-tag { font-size: 12px; fill: rgba(120, 70, 66, .8); text-anchor: end; }
+.nmj-arc { fill: none; stroke: #8d5a7c; stroke-width: 2.4; cursor: pointer; }
+.unit-bracket { fill: none; stroke: var(--accent); stroke-width: 2; }
+
+/* labels */
+.lbl { cursor: pointer; }
+.lbl-text {
+  font-size: 13.5px; fill: var(--accent-dark); font-weight: 600;
+  paint-order: stroke; stroke: var(--panel); stroke-width: 4; stroke-linejoin: round;
+}
+.lbl:hover .lbl-text, .lbl:focus .lbl-text { fill: var(--focus); text-decoration: underline; }
+.leader { stroke: #9fb2bf; stroke-width: 1.2; stroke-dasharray: 2 3; }
+.leader-dot { fill: #9fb2bf; }
+.unit-lbl .lbl-text { text-anchor: middle; }
+
+/* dynamic cargo / signal elements */
+.cargo.mito { fill: #e8934a; stroke: #b96f2e; }
+.cargo.vesicle { fill: #5a8fc7; }
+.cargo.protein { fill: #9a7ab8; }
+.cargo.rna { fill: #57a773; }
+.cargo { transition: opacity .6s; }
+.ach-dot { fill: #d46aa0; }
+.pulse-core { fill: #ffd166; stroke: #e0a91e; }
+.pulse-halo { fill: #ffd166; opacity: .3; }
+.nb-pulse .pulse-core { fill: #8fd0b2; stroke: #5c9c7e; }
+.nb-pulse .pulse-halo { fill: #8fd0b2; }
+
+/* journey highlight classes (also used by reduced-motion journey) */
+.fire #main-soma { fill: #ffd98f; }
+.fire-weak #main-soma { fill: #eec287; }
+.hl { filter: brightness(1.12) saturate(1.2); }
+.hl-weak { filter: brightness(1.05); opacity: .8; }
+.fiber.contract .fiber-body { fill: #f2907f; }
+.fiber.contract { transform: scale(0.94, 1.07); transition: transform .3s ease; }
+.fiber.contract-weak .fiber-body { fill: #eeb3a6; }
+.fiber.contract-weak { transform: scale(0.97, 1.03); transition: transform .3s ease; }
+
+@keyframes twitch-k {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1, 1.1); }
+  60% { transform: scale(1, .94); }
+}
+.fiber.twitch { animation: twitch-k .38s ease; }
+
+/* ============================================================
+ * ALS stage states on the scene
+ * ============================================================ */
+
+/* Stage 1 — cellular stress: markers appear, nothing fails yet */
+.stage1 .agg, .stage1 .stress-mito, .stage1 .rna-clump, .stage1 .ros,
+.stage2 .agg, .stage2 .stress-mito, .stage2 .rna-clump, .stage2 .ros,
+.stage3 .agg, .stage3 .stress-mito, .stage3 .rna-clump, .stage3 .ros,
+.stage4 .agg, .stage4 .stress-mito, .stage4 .rna-clump, .stage4 .ros,
+.stage5 .agg, .stage5 .stress-mito, .stage5 .rna-clump, .stage5 .ros { opacity: 1; }
+
+/* Stage 2 — MEDICAL: terminal withdrawal from F4 (denervation) */
+.stage2 .terminal.t4, .stage3 .terminal.t4, .stage4 .terminal.t4, .stage5 .terminal.t4,
+.stage3 .terminal.t3, .stage4 .terminal.t3, .stage5 .terminal.t3,
+.stage5 .terminal.t2 { opacity: .12; }
+.stage2 .branch.b4, .stage3 .branch.b4, .stage4 .branch.b4,
+.stage2 .branch.b4 { opacity: .35; }
+
+/* Stage 3 — MEDICAL: dying-back axonal degeneration of the DISTAL
+ * axon; myelin stays (ALS is not primarily demyelinating). */
+.stage3 .branch.b4, .stage4 .branch.b4, .stage5 .branch.b4,
+.stage3 .branch.b3, .stage4 .branch.b3, .stage5 .branch.b3 {
+  opacity: .18; stroke-dasharray: 4 9; stroke-width: 4;
+}
+.stage3 #axon-dist, .stage4 #axon-dist {
+  stroke-width: 8; stroke-dasharray: 10 8; opacity: .65;
+}
+.stage5 #axon-dist { stroke-width: 6; stroke-dasharray: 4 10; opacity: .3; }
+.stage5 #axon-prox { opacity: .55; stroke-width: 9; }
+.stage3 #axon-swell, .stage4 #axon-swell, .stage5 #axon-swell { opacity: 1; }
+
+/* Stage 4 — MEDICAL: neighbor emphasized; collateral sprouts grow
+ * to the abandoned fibers (reinnervation). */
+.stage4 #neighbor, .stage5 #neighbor { opacity: 1; }
+.stage4 .sprout, .stage5 .sprout, .stage4 .sprout-boutons, .stage5 .sprout-boutons { opacity: 1; }
+
+/* fiber responses per stage */
+.stage2 .fiber.f4 { opacity: .65; }
+.stage3 .fiber.f4, .stage3 .fiber.f3 { opacity: .55; }
+.stage4 .fiber.f3, .stage4 .fiber.f4 { opacity: .8; }   /* partially reinnervated */
+
+/* Stage 5 — MEDICAL: cell-body degeneration + neurogenic atrophy.
+ * F2 (lost its nerve) shrinks most; F3/F4 are partly preserved by
+ * the neighbor's sprouts; F1 (neighbor's own fiber) stays full. */
+.stage5 #main-soma-group { transform: scale(.8); opacity: .8; }
+.stage5 #main-soma { fill: #caa06c; }
+.stage5 #main-dendrites { opacity: .25; }
+.stage5 .fiber.f2 { transform: scale(1, .45); opacity: .7; }
+.stage5 .fiber.f3, .stage5 .fiber.f4 { transform: scale(1, .62); opacity: .85; }
+
+/* invisible hit areas */
+.hit { fill: none; stroke: rgba(0,0,0,0); stroke-width: 22; pointer-events: stroke; cursor: pointer; }
+circle.hit { fill: rgba(0,0,0,0); stroke: none; pointer-events: all; }
+
+/* ============================================================
+ * cross-section dialog
+ * ============================================================ */
+#cross-section-dialog {
+  display: none; position: fixed; inset: 0; z-index: 40;
+  background: rgba(43, 54, 66, .45);
+  align-items: center; justify-content: center; padding: 1rem;
+}
+#cross-section-dialog.open { display: flex; }
+.cs-card {
+  background: var(--panel); border-radius: 14px; max-width: 520px; width: 100%;
+  padding: 1rem 1.2rem 1.2rem; max-height: 92vh; overflow: auto;
+}
+.cs-card h2 { margin: .2rem 2rem .4rem 0; font-size: 1.15rem; }
+.cs-card p { font-size: .92rem; color: var(--ink-soft); }
+#cs-close { float: right; }
+#cross-section { width: 100%; height: auto; }
+.cs-cord { fill: #fdfaf3; stroke: #cfc6b4; stroke-width: 2; }
+.cs-gray { fill: #e7ded0; stroke: #c4b8a4; stroke-width: 1.5; }
+.cs-horn { fill: #e9c48c; stroke: var(--neuron-line); stroke-width: 1.5; }
+.cs-mn circle { fill: var(--neuron); stroke: var(--neuron-line); }
+.cs-canal { fill: #b8ac96; }
+.cs-mid { stroke: #c4b8a4; stroke-dasharray: 3 4; }
+.cs-root { fill: none; stroke: #c4b8a4; stroke-width: 5; stroke-linecap: round; }
+.cs-lbl { font-size: 11.5px; fill: var(--ink-soft); }
+.cs-lbl.strong { fill: var(--accent-dark); font-weight: 700; }
+.cs-leader { stroke: #9fb2bf; stroke-width: 1; stroke-dasharray: 2 3; }
+
+/* ============================================================
+ * comparison, key lesson, footer
+ * ============================================================ */
+.compare { margin: 1.4rem 0; }
+.compare h2, .key-lesson h2 { font-size: 1.15rem; margin: 0 0 .6rem; }
+.compare-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.compare-col {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: .9rem 1.1rem;
+  transition: box-shadow .5s, border-color .5s;
+}
+.compare-col h3 { margin: 0 0 .4rem; font-size: 1rem; }
+.compare-col ul { margin: 0; padding-left: 1.15rem; }
+.compare-col li { margin: .25rem 0; font-size: .94rem; }
+.compare-col.healthy h3 { color: #3d6b4f; }
+.compare-col.als h3 { color: var(--als); }
+body:not(.mode-als) .compare-col.healthy { border-color: #3d6b4f; box-shadow: 0 0 0 2px rgba(61,107,79,.18); }
+body.mode-als .compare-col.als { border-color: var(--als); box-shadow: 0 0 0 2px rgba(164,80,76,.18); }
+
+.key-lesson {
+  margin: 0 0 1.4rem; padding: 1.1rem 1.2rem;
+  background: #f0f4f7; border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0;
+}
+.key-lesson p { margin: 0; font-size: 1.02rem; max-width: 95ch; }
+
+footer.site {
+  border-top: 1px solid var(--line); margin-top: 1rem; padding: 1rem 0 2.4rem;
+  color: var(--ink-soft); font-size: .86rem;
+}
+footer.site p { max-width: 110ch; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .visual-row { grid-template-columns: 1fr; }
+  #info-panel { position: relative; }
+  .compare-cols { grid-template-columns: 1fr; }
+  header.site h1 { font-size: 1.25rem; }
+  .ticks { font-size: .66rem; }
+  .tick { padding: .2rem .1rem; }
+}
+
+/* ---------- reduced motion ---------- */
+body.reduced-motion * { animation: none !important; transition: none !important; }
