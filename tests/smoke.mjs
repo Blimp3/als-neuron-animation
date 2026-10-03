@@ -13,7 +13,7 @@ const [readme, index, browserSmoke, sources, notices] = await Promise.all([
   read("THIRD_PARTY_NOTICES.md")
 ]);
 
-assert.match(readme, /cd als-website/);
+assert.match(readme, /cd als-neuron-animation/);
 assert.match(readme, /illustrative teaching/);
 assert.match(index, /aria-label="Illustrative teaching states"/);
 assert.match(index, /Teaching states: healthy/);

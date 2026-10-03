@@ -1,66 +1,99 @@
 # Lower Motor Neuron & ALS — Interactive Visualization
 
-An educational, interactive single-page visualization of the lower motor unit
-(motor-neuron cell body → axon → neuromuscular junction → muscle fibers) and
-selected ALS-related changes. The timeline presents illustrative teaching
-states; it is not a clinical staging system or a prediction of disease
-progression.
+This project is an educational, interactive single-page visualization. It
+shows the lower motor unit and selected changes related to amyotrophic lateral
+sclerosis (ALS).
+
+The lower motor unit in the visualization is:
+motor-neuron cell body → axon → neuromuscular junction (NMJ) → muscle fibers.
+
+The timeline shows illustrative teaching states. The timeline is not a clinical
+staging system or a prediction of disease progression.
 
 **This is an educational illustration, not medical advice, not a diagnostic
 tool, and not treatment guidance. It is schematic and not to scale; the
 teaching states are not clinical stages or a patient timeline.**
 
-## Running locally
+## Controls
 
-No backend and no build step are required. Either:
+- **Timeline / slider**: Moves between the healthy state and five illustrative
+  teaching states.
+- **Normal / ALS-affected buttons**: Go directly to one of the two modes.
+- **Signal journey**: Animates a voluntary motor command from the cell body to
+  muscle contraction. In ALS-related states, it shows where the journey fails.
+- **Click any label or structure**: Shows the normal role of the structure and
+  how ALS affects it.
+- **Spinal cord cross-section**: Shows the anterior horn. The lower
+  motor-neuron cell bodies are in the anterior horn.
+- **Reduce motion**: Turns off the animation. If the operating system requests
+  reduced motion, the page turns on Reduce motion automatically.
 
-- **Simply open the file:** double-click `index.html` in a file browser, or
-- **Serve it (optional, recommended):**
+## Requirements
 
-  ```bash
-  cd als-website
-  python3 -m http.server 8000
-  # then open http://localhost:8000 in a browser
-  ```
+- To view the page: a current desktop or mobile browser
+- To serve the files and run the browser check (optional): Python 3
+- To run the static check: Node.js
 
-The page is intended to run in current desktop and mobile browsers. The
-repeatable browser check below was run in Chromium; it does not establish
-cross-browser or mobile equivalence.
+The project needs no backend and no build step.
+
+## Run locally
+
+Use one of these two methods.
+
+### Method 1: Open the file
+
+1. Double-click `index.html` in a file browser.
+
+### Method 2: Serve the files (optional, recommended)
+
+1. Open a terminal in the folder that contains the clone.
+2. Run these commands:
+
+   ```bash
+   cd als-neuron-animation
+   python3 -m http.server 8000
+   # then open http://localhost:8000 in a browser
+   ```
 
 ## Checks
 
-The dependency-free static check used by CI is:
+The project has two checks: a static check and a browser check.
 
-```bash
-node tests/smoke.mjs
-```
+### Static check
 
-For a real-browser behavior check, serve the repository:
+CI uses this static check. The static check has no dependencies.
 
-```bash
-python3 -m http.server 8000 --bind 127.0.0.1
-```
+1. Run:
 
-Open `http://127.0.0.1:8000/tests/browser-smoke.html` in a browser. The page
-must report **Passed**; a failed assertion names the behavior to inspect.
+   ```bash
+   node tests/smoke.mjs
+   ```
 
-The browser harness loads the real `index.html` in an iframe and checks dialog
-focus containment and return, Escape close, timeline values 0–5 and the
-reduced-motion control. It does not establish full accessibility conformance,
-clinical validity or cross-browser equivalence; those require separate review.
+   Result: the static check prints `Static ALS smoke checks passed.`
 
-## Using the visualization
+### Browser check
 
-- **Timeline / slider** — move between the healthy state and five illustrative
-  teaching states.
-- **Normal / ALS-affected buttons** — jump straight to either mode.
-- **Signal journey** — animates a voluntary motor command from the cell body to
-  muscle contraction; in ALS-related states it shows where the journey fails.
-- **Click any label or structure** — shows its normal role and how ALS affects it.
-- **Spinal cord cross-section** — shows the anterior horn, where lower
-  motor-neuron cell bodies are located.
-- **Reduce motion** — disables animation (also auto-enabled when the operating
-  system requests reduced motion).
+The browser check (`tests/browser-smoke.html`) tests behavior in a real
+browser.
+
+1. In the `als-neuron-animation` folder, serve the files:
+
+   ```bash
+   python3 -m http.server 8000 --bind 127.0.0.1
+   ```
+
+2. Open `http://127.0.0.1:8000/tests/browser-smoke.html` in a browser.
+
+   Result: the page must show **Passed**. If an assertion fails, the page
+   names the behavior to inspect.
+
+The browser check loads the real `index.html` in an iframe. It checks these
+behaviors:
+
+- dialog focus containment and return
+- Escape close
+- timeline values 0–5
+- the reduced-motion control
 
 ## Code layout
 
@@ -75,10 +108,18 @@ clinical validity or cross-browser equivalence; those require separate review.
 | `js/app.js` | UI wiring: timeline, modes, info panel, keyboard access, reduced motion |
 | `js/vendor/` | Vendored Three.js r128 + OrbitControls (local copies, so the 3D model works offline and from `file://`) |
 
-Medically important sections are marked with `MEDICAL:` comments in the code.
-The simplified educational claims and their source mapping are recorded in
-[`SOURCES.md`](SOURCES.md). Vendored Three.js files and their exact upstream
-checksums are recorded in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+- `MEDICAL:` comments in the code mark the medically important sections.
+- [`SOURCES.md`](SOURCES.md) records the simplified educational claims and
+  their source mapping.
+- [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) records the vendored
+  Three.js files and their exact upstream checksums.
+
+## Limits
+
+- The repeatable browser check ran in Chromium. This result does not establish
+  cross-browser or mobile equivalence.
+- The browser check does not establish full accessibility conformance,
+  clinical validity or cross-browser equivalence. These need separate review.
 
 ## License
 
